@@ -5,7 +5,7 @@ Port the intent, not the form. Existing scripts tell you what has to happen; moo
 1. **Wrap.** Each existing entry point becomes a task with `cache: false` (or `inferTasksFromScripts` for `package.json`). Nothing breaks, CI switches to `moon run`/`moon ci`, people learn targets.
 2. **Tighten.** Task by task: call the tool directly, add file groups, `inputs`, `outputs`, `deps`, move shared tasks into `.moon/tasks/*.yml`, enable caching, verify hits (see [debugging.md](debugging.md)).
 
-Skipping pass 2 leaves you with a slower Makefile. Skipping pass 1 means a big-bang change nobody can review.
+Skipping pass 2 leaves you with a slower Makefile. Both passes serve [MOONREPO FIRST](../SKILL.md#moonrepo-first): at the end moon is the only entry point, and old scripts and Make targets are deleted or reduced to one-line `moon run` wrappers. Skipping pass 1 means a big-bang change nobody can review.
 
 ## Sources and what to do with them
 

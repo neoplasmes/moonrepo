@@ -1,6 +1,6 @@
 ---
 name: moonrepo
-description: Rules and verified recipes for moon (moonrepo.dev) workspaces in any language. Use before creating or editing moon.yml, .moon/*, .prototools or a package manifest in a moon workspace; when adding a project, task, toolchain or language (TypeScript, Go, Python and others); when writing inputs, outputs or file-group globs; when a task is not cached, re-runs or behaves differently in CI; when setting up CI, CI caching or a remote cache; when writing a Dockerfile for a moon project; when creating code-generation templates; when considering WASM plugins or extensions; when wiring webhooks, OpenTelemetry or profiling; and when porting scripts, Makefiles, Nx or Turborepo to moon.
+description: Rules and verified recipes for moon (moonrepo.dev) workspaces in any language; moon is the only entry point (moon run / moon ci, never npm scripts, Make or direct tool calls). Use before creating or editing moon.yml, .moon/*, .prototools or a package manifest in a moon workspace; when adding a project, task, toolchain or language (TypeScript, Go, Python and others); when writing inputs, outputs or file-group globs; when a task is not cached, re-runs or behaves differently in CI; when setting up CI, CI caching or a remote cache; when writing a Dockerfile for a moon project; when creating code-generation templates; when considering WASM plugins or extensions; when wiring webhooks, OpenTelemetry or profiling; and when porting scripts, Makefiles, Nx or Turborepo to moon.
 license: Moonrepo Skill License (free use, no resale) - https://github.com/neoplasmes/moonrepo/blob/master/LICENSE
 metadata:
   author: Egor Zverkov (neoplasmes)
@@ -21,6 +21,18 @@ moon is a task runner and build system: a workspace of projects, each with tasks
 ### Local adaptation
 
 When this skill is copied into a repository, put a `## Local adaptation` section right under the title. It overrides the defaults below and should state: the tool executor (`pnpm exec`, `bunx`, `uv run --locked`, `go tool`), the formatter setup, the pinned task shell, the project layout and root project id, task names that differ from the default vocabulary, and what is out of scope (Docker, deploys, container test suites).
+
+## MOONREPO FIRST
+
+In a moon workspace, moon is the only entry point for project operations. These rules are hard:
+
+1. **Run through moon.** Format, lint, typecheck, test, build, generate, start and deploy-preparation steps run as `moon run <target>` (or `moon ci` in CI). Do not run `npm run`, `pnpm run`, `make`, `just`, `task`, `go test`, `pytest`, `cargo test` or another tool directly to do a job that has, or should have, a moon task. A direct tool call bypasses the cache, the affected graph, dependency ordering and the hash, so its result tells you nothing about what CI will do. Calling a tool directly is fine to investigate a failure after `moon run` reported it, never as the way to run the operation.
+2. **A new operation becomes a moon task first.** If an operation has no task, create the task (see [Decomposition](#decomposition)), then run it through moon. Do not run it ad hoc and promise to "add the task later".
+3. **No parallel entry points.** Do not add `scripts` to `package.json`, targets to a `Makefile`/`justfile`/`Taskfile`, `project.json` targets, `tox`/`nox` sessions, `pyproject` script runners, shell wrappers, or CI steps that repeat a task's command. Every such file is a second source of truth that drifts from the moon task and escapes the cache. CI calls `moon ci` or `moon run`, never the underlying tools.
+4. **Existing parallel entry points are migration debt.** When you touch one, move its logic into a moon task and delete the old entry or reduce it to a one-line wrapper (`"test": "moon run :test"`) that exists only so muscle memory keeps working. See [migration.md](references/migration.md).
+5. **Exceptions come only from the repository.** If `AGENTS.md`, `ARCHITECTURE*.md` or the Local adaptation section says otherwise (for example "root `package.json` keeps a `prepare` script for hooks"), follow the repository. Without such a written exception, rules 1 to 4 apply. "It is quicker to run it directly" is not an exception.
+
+Manifests keep what is theirs: dependencies, metadata, `engines`, `bin`, lifecycle hooks the package manager requires (`postinstall` for native modules). They are not task runners.
 
 ## References
 
@@ -105,7 +117,7 @@ Cookbook: [patterns.md](references/patterns.md).
 
 ## Commands
 
-- Call the tool directly from the task (`ruff check`, `go vet ./...`, `pnpm exec vitest run`), not through `package.json` scripts, `make` targets or wrapper scripts. The real command then lives in the hash and in `moon task --json`.
+- Call the tool directly from the task (`ruff check`, `go vet ./...`, `pnpm exec vitest run`), not through `package.json` scripts, `make` targets or wrapper scripts. The real command then lives in the hash and in `moon task --json`. This is the other half of [MOONREPO FIRST](#moonrepo-first): people run moon, moon runs the tool.
 - Pin every CLI the tasks call: in `.prototools` (and therefore in the hash through the `/.prototools` implicit input), in the language's own manifest (`go.mod` `tool` directives, `devDependencies`, `uv` dev groups), or both. No global installs.
 - Pin the task shell in `.moon/tasks/all.yml` `taskOptions` (`unixShell`, `windowsShell`). Unset, `unixShell` comes from the developer's `$SHELL`, so a fish user and a bash user run different shells. `windowsShell` defaults to `pwsh`.
 - Multi-step logic goes into a script file under `tools/` called by the task, or into several tasks wired with `deps`. No long `bash -c '... && ... && ...'` one-liners: they hide failures, defeat per-step caching and do not run on Windows.
@@ -146,5 +158,6 @@ When you are about to create a structure that already exists at least twice (a s
 2. `moon task <project>:<task> --json` for every task you touched: check `command`, `args`, `inputFiles`, `inputGlobs`, `inputEnv`, `outputs`, `deps`, `options`.
 3. For a new or changed group, list what it matches with a throwaway task (`command: echo @files(<group>)`, `cache: false`), run it once, remove it.
 4. Run the task twice: the second run must say `cached`. Touch a file that should invalidate it and one that should not; confirm both. `moon hash <a> <b>` diffs two hashes.
-5. `moon run :check` (or the repository's equivalent) and the affected tests pass.
+5. `moon run :check` (or the repository's equivalent) and the affected tests pass, run through moon and not through the tools directly.
+6. No new `scripts`, Make targets or CI steps duplicate a task ([MOONREPO FIRST](#moonrepo-first)).
 6. Update the repository's architecture or conventions document in the same change when a rule changes.
