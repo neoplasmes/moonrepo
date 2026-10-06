@@ -1,0 +1,4 @@
+cocogitto = "7.0.0"
+
+[plugins.tools]
+cocogitto = "file://./.proto/plugins/cocogitto.toml"

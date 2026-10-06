@@ -1,0 +1,32 @@
+name = "Cocogitto"
+type = "cli"
+
+[install]
+download-url = "https://github.com/cocogitto/cocogitto/releases/download/{version}/{download_file}"
+
+[install.exes.cog]
+exe-path = "cog"
+primary = true
+
+[platform.windows]
+archs = ["x64"]
+download-file = "cocogitto-{version}-{arch}-pc-windows-msvc.tar.gz"
+archive-prefix = "{arch}-pc-windows-msvc"
+
+[platform.macos]
+archs = ["x64", "arm64"]
+download-file = "cocogitto-{version}-{arch}-apple-darwin.tar.gz"
+archive-prefix = "{arch}-apple-darwin"
+
+[platform.linux]
+archs = ["x64", "arm64"]
+download-file = "cocogitto-{version}-{arch}.tar.gz"
+archive-prefix = "{arch}"
+
+[platform.linux.arch]
+x86_64 = "x86_64-unknown-linux-musl"
+aarch64 = "aarch64-unknown-linux-gnu"
+
+[resolve]
+git-url = "https://github.com/cocogitto/cocogitto"
+version-pattern = '^v?(\d+\.\d+\.\d+)$'

@@ -1,0 +1,12 @@
+from_latest_tag = false
+ignore_merge_commits = false
+ignore_fixup_commits = false
+disable_changelog = false
+disable_bump_commit = false
+skip_ci = "[skip ci]"
+branch_whitelist = ["master"]
+tag_prefix = "v"
+
+[changelog]
+path = "CHANGELOG.md"
+authors = []

@@ -1,0 +1,71 @@
+Moonrepo Skill License (no-resale, free use)
+Version 1.0, 2026
+
+Copyright (c) 2026 Egor Zverkov (https://github.com/neoplasmes)
+
+"Software" means the contents of this repository: the agent skill in
+skills/moonrepo (SKILL.md and references/), the documentation and the
+repository tooling.
+
+1. Grant
+
+   You may, free of charge and without asking for permission:
+
+   a. use the Software for any purpose, including in commercial projects, at
+      companies, in client work, and with commercial AI agents and tools;
+   b. copy it, install it, and modify it for your own needs;
+   c. share it, and share your modified versions, with anyone, provided the
+      conditions below are met and nothing is charged for it.
+
+2. No resale
+
+   You may not sell the Software, and you may not present it as your own
+   work. In particular, you may not:
+
+   a. charge money, or any other consideration, for the Software or for a
+      modified version of it, for copies of it, or for access to it,
+      including in a paid course, subscription, marketplace listing, template
+      store, paid newsletter or paywalled repository;
+   b. make the Software, or a substantial part of it, the main value of a
+      paid product or service (including paid skill collections or
+      "premium" prompt or skill packs);
+   c. remove or change the copyright notice, this license, or the
+      attribution described in section 3.
+
+   Things that are not resale and remain allowed: using the Software while
+   you build, review or operate paid software; billing for your own work
+   (consulting, development, training) in which you use the Software as a
+   tool; keeping it inside your company's private repositories and
+   internal tooling; and including it, unsold, in a repository or
+   distribution that you provide free of charge.
+
+3. Attribution
+
+   Every copy or substantial portion of the Software must keep the copyright
+   notice above, this license text (or a link to it:
+   https://github.com/neoplasmes/moonrepo/blob/master/LICENSE) and the
+   `license` and attribution lines in SKILL.md. Modified versions must say
+   that they were modified and name the original author and source.
+
+4. Termination
+
+   If you violate this license, your rights under it end automatically.
+   They are restored if you stop the violation within 30 days after
+   becoming aware of it, and it was your first violation.
+
+5. Third-party material
+
+   The Software describes and links to third-party tools (moon, proto,
+   Go, Python, Node.js, Docker and others). Those tools, their names and
+   their documentation belong to their respective owners and are governed
+   by their own licenses. Nothing here grants rights to them.
+
+6. No warranty
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
