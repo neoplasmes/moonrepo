@@ -1,5 +1,7 @@
 # Caching: local, CI and remote
 
+Docs: [concepts/cache](https://moonrepo.dev/docs/concepts/cache), [guides/remote-cache](https://moonrepo.dev/docs/guides/remote-cache), [config/workspace#remote](https://moonrepo.dev/docs/config/workspace#remote), [#cache](https://moonrepo.dev/docs/config/workspace#cache), [commands/hash](https://moonrepo.dev/docs/commands/hash), [CI caching](https://moonrepo.dev/docs/guides/ci#caching-artifacts).
+
 moon skips a task when its hash matches a previous run and replays the recorded outputs and logs. This file explains what goes into the hash, how outputs are stored, and how to share the cache between CI runs and machines without sharing wrong results. Observations marked "verified" were made with moon 2.5.5 hash manifests.
 
 ## 1. What is hashed

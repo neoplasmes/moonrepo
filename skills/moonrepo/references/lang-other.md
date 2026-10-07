@@ -1,5 +1,7 @@
 # Other languages
 
+Docs: [guides/rust/handbook](https://moonrepo.dev/docs/guides/rust/handbook), [how languages are supported](https://moonrepo.dev/docs/how-it-works/languages), [tools proto installs](https://moonrepo.dev/docs/proto/tools), `moon toolchain info <id>`.
+
 The task vocabulary never changes with the language. A new ecosystem brings a `.moon/tasks/<ecosystem>.yml`, pinned tools in `.prototools`, and projects selected through `language`, a toolchain or `tags`.
 
 ## Checklist for a new language

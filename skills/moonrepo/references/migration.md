@@ -1,5 +1,7 @@
 # Migrating to moon
 
+Docs: [migrate-nx](https://moonrepo.dev/docs/guides/extensions#migrate-nx), [migrate-turborepo](https://moonrepo.dev/docs/guides/extensions#migrate-turborepo), [moon v1 to v2](https://moonrepo.dev/docs/migrate/2.0).
+
 Port the intent, not the form. Existing scripts tell you what has to happen; moon tasks should say it with precise inputs and outputs. Migrate in two passes:
 
 1. **Wrap.** Each existing entry point becomes a task with `cache: false` (or `inferTasksFromScripts` for `package.json`). Nothing breaks, CI switches to `moon run`/`moon ci`, people learn targets.

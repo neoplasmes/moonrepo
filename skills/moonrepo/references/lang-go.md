@@ -1,5 +1,7 @@
 # Go
 
+Docs: `moon toolchain info go` (no Go handbook in the docs), [config/toolchain#go](https://moonrepo.dev/docs/config/toolchain#go).
+
 Go has strong opinions about layout and its own build and test cache. moon adds project-level orchestration, affected detection and cross-machine caching on top; the trick is to not fight Go's cache.
 
 ## Toolchain

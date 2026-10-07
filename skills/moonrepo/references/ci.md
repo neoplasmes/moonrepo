@@ -1,5 +1,7 @@
 # CI with moon
 
+Docs: [guides/ci](https://moonrepo.dev/docs/guides/ci), [commands/ci](https://moonrepo.dev/docs/commands/ci), [commands/exec](https://moonrepo.dev/docs/commands/exec), [guides/exec-plan](https://moonrepo.dev/docs/guides/exec-plan), [concepts/affected](https://moonrepo.dev/docs/concepts/affected), [version matrices](https://moonrepo.dev/docs/guides/open-source).
+
 CI follows [MOONREPO FIRST](../SKILL.md#moonrepo-first): the pipeline calls `moon ci` or `moon run`, never `pnpm test`, `go test`, `make` or the tools themselves. A CI step that repeats a task's command is a second source of truth and bypasses affected detection and the cache.
 
 ## What `moon ci` does

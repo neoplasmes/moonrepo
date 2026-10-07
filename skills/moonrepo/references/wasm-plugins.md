@@ -1,5 +1,7 @@
 # WASM plugins: when they are worth it
 
+Docs: [guides/wasm-plugins](https://moonrepo.dev/docs/guides/wasm-plugins), [guides/extensions](https://moonrepo.dev/docs/guides/extensions), [config/extensions](https://moonrepo.dev/docs/config/extensions), [proto/non-wasm-plugin](https://moonrepo.dev/docs/proto/non-wasm-plugin), [proto/wasm-plugin](https://moonrepo.dev/docs/proto/wasm-plugin), [proto/plugins](https://moonrepo.dev/docs/proto/plugins).
+
 moon and proto load plugins compiled to WebAssembly (Extism runtime, wasmtime underneath). There are three kinds, and for most needs there is a cheaper option than writing one. Read the decision table first.
 
 > The plugin APIs are marked experimental: breaking changes can land in non-major releases. moon has not yet adopted the reworked path API from proto v0.60, so moon plugins still use the older `VirtualPath` helpers. Pin moon when you depend on a custom plugin.
@@ -104,19 +106,14 @@ pinned-url:
 - WASI limits: no `chmod`, so plugins cannot unpack archives with modes; that work goes through host functions.
 - Debug with `MOON_DEBUG_WASM=true` and `--log trace`.
 
-## Writing a plugin (outline)
+## Writing a plugin
 
-1. `cargo new --lib`, `crate-type = ["cdylib"]`, release profile with `lto = true`, `opt-level = "s"`, `panic = "abort"`.
-2. Dependencies: `extism-pdk`, plus `moon_pdk` (moon toolchains and extensions) or `proto_pdk` (proto tools). `schematic` with `default-features = false, features = ["schema"]` for config schemas.
-3. Implement the required functions:
-   - extension: `register_extension`, `execute_extension`; optional `define_extension_config`, graph/task/sync hooks;
-   - toolchain: `register_toolchain`, then by tier: detection and config (tier 1), `extend_project_graph`, `hash_task_contents`, `install_dependencies`, `parse_lock`, `setup_environment` (tier 2), tool management (tier 3);
-   - proto tool: `register_tool`, `download_prebuilt`, `locate_executables`, `load_versions`.
-4. Build: `cargo build --target wasm32-wasip1 --release`, then `wasm-opt -Os` and `wasm-strip` (the `moonrepo/build-wasm-plugin` GitHub Action does all of this and publishes a release on tag push).
-5. Test locally with a `file://` locator; publish as a GitHub release asset; consumers pin the tag.
-6. Read `get_host_environment()` for os/arch instead of assuming Linux; convert virtual paths with the PDK helpers before logging or passing them to commands.
+Follow the docs, they track the PDK API: [guides/wasm-plugins](https://moonrepo.dev/docs/guides/wasm-plugins) (concepts, host functions, building), [guides/extensions](https://moonrepo.dev/docs/guides/extensions) (extension APIs), [proto/wasm-plugin](https://moonrepo.dev/docs/proto/wasm-plugin) (tool APIs). Reference implementations: `moonrepo/plugins`, `moonrepo/moon-extensions`; `moonrepo/build-wasm-plugin` builds, optimises and publishes releases. Gotchas worth knowing up front:
 
-Reference implementations: `moonrepo/plugins` (official toolchains and extensions) and `moonrepo/moon-extensions`.
+- Target `wasm32-wasip1`, `crate-type = ["cdylib"]`; release builds need `wasm-opt`/`wasm-strip` or the files are large.
+- Read the host os/arch with `get_host_environment()`; never assume Linux.
+- Paths are virtual (`/workspace`, `/userhome`); convert before logging or passing to commands. moon still uses the pre-proto-v0.60 path API.
+- Test with a `file://` locator before publishing; consumers pin a release tag.
 
 ## Cost summary
 

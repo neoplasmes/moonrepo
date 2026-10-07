@@ -34,6 +34,34 @@ In a moon workspace, moon is the only entry point for project operations. These 
 
 Manifests keep what is theirs: dependencies, metadata, `engines`, `bin`, lifecycle hooks the package manager requires (`postinstall` for native modules). They are not task runners.
 
+## Docs first
+
+This skill holds rules, decisions, recipes and verified gotchas. The reference (every setting, flag, token, env var, event, template filter) lives in moon's docs and CLI and changes with every release; this skill deliberately does not copy it. Before you write a setting, flag or field you have not seen working in this repository, look it up:
+
+1. **Ask the installed moon first**: `moon <command> --help`, `moon toolchain info <id>`, `moon extension info <id>`, `moon task <target> --json`, `moon project <id>`, the JSON schemas moon writes to `.moon/cache/schemas/`. They describe exactly the version the repository runs.
+2. **Then read the docs page for the topic.** Fetch the raw source, not the HTML: `https://moonrepo.dev/docs/<path>` is `https://raw.githubusercontent.com/moonrepo/moon/master/website/docs/<path>.mdx`. Page index: `https://moonrepo.dev/llms.txt`. Everything in one file: `https://moonrepo.dev/llms-full.txt` (1.4 MB; search it, do not read it whole).
+3. **Mind the version.** Docs on `master` can describe unreleased features. `<VersionLabel version="x.y.z" />` in the MDX says when a setting appeared; compare it with `moon --version`. Release notes and upgrade notes: `https://moonrepo.dev/blog`.
+4. **When sources disagree, the installed CLI wins.** The docs have known stale spots (this skill notes the ones it found). Reproduce in a scratch workspace when it matters. In this skill, "(verified)" means reproduced on a real workspace with the version stated; anything else comes from the docs and should be checked there.
+
+| Topic                                   | Docs path (append to `https://moonrepo.dev/docs/`)                                   |
+| --------------------------------------- | ------------------------------------------------------------------------------------ |
+| Project settings, task fields, options  | `config/project` (`#tasks`, `#options`, `#deps`, `#inputs`, `#outputs`)             |
+| Inherited tasks, `inheritedBy`          | `config/tasks`, `concepts/task-inheritance`                                          |
+| Workspace settings                      | `config/workspace` (`#remote`, `#docker`, `#pipeline`, `#hasher`, `#vcs`, `#experiments`) |
+| Toolchains                              | `config/toolchain`, plus `moon toolchain info <id>`                                   |
+| Globs, file groups, tokens, targets     | `concepts/file-pattern`, `concepts/file-group`, `concepts/token`, `concepts/target`  |
+| Cache, hashing, affected                | `concepts/cache`, `concepts/affected`, `commands/hash`                               |
+| CLI and environment variables           | `commands/overview`, `commands/<name>`, `env-vars`                                   |
+| CI, remote cache, execution plans       | `guides/ci`, `guides/remote-cache`, `guides/exec-plan`, `commands/ci`               |
+| Docker                                  | `guides/docker`, `commands/docker/{scaffold,setup,prune,file}`                       |
+| Debugging, profiling, webhooks          | `guides/debug-task`, `guides/profile`, `guides/webhooks`, `guides/notifications`     |
+| Code generation                         | `guides/codegen`, `config/template`, `commands/generate`                             |
+| Plugins and extensions                  | `guides/wasm-plugins`, `guides/extensions`, `config/extensions`, `proto/non-wasm-plugin`, `proto/wasm-plugin` |
+| Workspace features                      | `guides/root-project`, `guides/sharing-config`, `guides/codeowners`, `guides/vcs-hooks`, `guides/daemon`, `guides/mcp`, `guides/offline-mode`, `guides/renovate` |
+| Language handbooks                      | `guides/javascript/node-handbook`, `guides/javascript/bun-handbook`, `guides/javascript/typescript-project-refs`, `guides/rust/handbook` |
+| proto (tool versions and plugins)       | `proto/config`, `proto/plugins`, `proto/tool-spec`                                   |
+| Upgrading from v1                       | `migrate/2.0`                                                                         |
+
 ## References
 
 | Read                                                  | When                                                                                     |
@@ -130,7 +158,7 @@ Cookbook: [patterns.md](references/patterns.md).
 
 **CI.** Run `moon ci` (affected tasks, their upstream deps, direct dependents, `--on-failure=continue`). Check out full history (`fetch-depth: 0`, `filter: blob:none`); a shallow clone breaks affected detection. On a push to the default branch moon compares with `HEAD~1`, so a multi-commit push needs `MOON_BASE` set to the previous tip. See [ci.md](references/ci.md).
 
-**Docker.** `moon docker scaffold/setup/prune` gives `O(1)` Dockerfiles for dependency-heavy ecosystems (Node, Python). For Go and Rust services, building the binary in a moon task and copying it into a minimal image is usually simpler and remote-cacheable. Without `.git` in the build context moon disables task caching inside the build. See [docker.md](references/docker.md) for Windows/WSL2 caveats.
+**Docker.** Use `moon docker scaffold` to compute what an image needs; for pnpm workspaces do not use `moon docker setup`/`prune` (setup runs an unfiltered `pnpm install`, verified) but the canonical recipe: `pnpm fetch` on the lockfile, offline filtered install, `moon run <app>:build --no-actions`, `pnpm deploy --prod`. Go, Rust and static frontends build artifacts outside and copy them in. See [docker.md](references/docker.md), including Windows/WSL2 caveats.
 
 ## VCS hooks
 
@@ -141,6 +169,8 @@ moon can generate Git hooks from `vcs.hooks` (`moon sync hooks`, or `vcs.sync: t
 When you are about to create a structure that already exists at least twice (a service, a package, a page slice, an ADR), or you create the second copy yourself, stop and propose a `moon generate` template: show the repeated paths, the variables and the destination. Create it only after the user agrees; afterwards generate with it instead of copying by hand. See [codegen.md](references/codegen.md).
 
 ## Version notes
+
+What each release added, for judging whether a repository's moon can use a feature. Anything newer than this table: `https://moonrepo.dev/blog` and the `VersionLabel`s in the docs.
 
 | Version | What it enables                                                                                         |
 | ------- | ------------------------------------------------------------------------------------------------------- |

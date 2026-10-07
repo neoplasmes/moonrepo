@@ -1,5 +1,7 @@
 # Code generation with `moon generate`
 
+Docs: [guides/codegen](https://moonrepo.dev/docs/guides/codegen), [config/template](https://moonrepo.dev/docs/config/template), [commands/generate](https://moonrepo.dev/docs/commands/generate), [generator settings](https://moonrepo.dev/docs/config/workspace#generator).
+
 moon renders templates (a folder with `template.yml` and Tera files) into the repository. Use it for structures the repository creates again and again: a service, a package, a page slice, an ADR, a migration pair. Everything in the feature table was run on moon 2.5.
 
 ## When to propose a template
@@ -90,15 +92,7 @@ generator:
 
 ## Variables
 
-| Type      | Notes                                                                                     |
-| --------- | ----------------------------------------------------------------------------------------- |
-| `string`, `number`, `boolean` | `default` required; `prompt` makes it interactive; `required` rejects empty values |
-| `enum`    | `values` list, optional `multiple: true` (renders an array)                                |
-| `array`, `object` | JSON values; objects cannot be set from the command line                          |
-| `internal: true` | computed or fixed values that the CLI must not override                            |
-| `order`   | prompt order                                                                              |
-
-Name variables in camelCase. Prefer `enum` for closed choices and `boolean` for optional files (rendered with `skip:` frontmatter). Command-line names match variable names: `--name x`, `--with-database` / `--no-with-database` for booleans.
+Types, fields and prompts: [config/template#variables](https://moonrepo.dev/docs/config/template#variables). Conventions: camelCase names; `enum` for closed choices, `boolean` for optional files (rendered with `skip:` frontmatter); `internal: true` for values the CLI must not override. Objects cannot be set from the command line.
 
 ## Running
 
@@ -114,23 +108,9 @@ moon generate my-new-template --template         # scaffold a new template folde
 - `--defaults` skips prompts, `--force` overwrites. Agents and CI must pass both variables and `--defaults`, because prompts block.
 - The moon MCP server exposes template discovery (`get_templates`, `get_template`, v2.3+).
 
-## Tera and moon features
+## Template syntax
 
-| Feature                          | Syntax                                                         |
-| -------------------------------- | -------------------------------------------------------------- |
-| Variable                         | `{{ name }}`                                                   |
-| Case filters (moon)              | `pascal_case`, `camel_case`, `kebab_case`, `snake_case`, `upper_snake_case`, `upper_kebab_case`, `lower_case`, `upper_case`; function `variables()` |
-| Path filters (moon)              | `path_join(part = "x")`, `path_relative(from = other)`         |
-| Interpolation in paths           | `[name \| pascal_case]` in `destination` or file names          |
-| Rename the output file           | frontmatter `to: {{ name \| pascal_case }}.page.tsx`            |
-| Conditional file                 | frontmatter `skip: {{ not withModel }}`                        |
-| Overwrite without prompting      | frontmatter `force: true`                                      |
-| Current date                     | `{{ now() \| date(format="%Y-%m-%d") }}` (checked)              |
-| Inherit another template         | `extends: [base]` in `template.yaml`                           |
-| Shared fragments                 | any file with `partial` in its path, used with `{% include %}` |
-| Always-available variables       | `dest_dir`, `dest_rel_dir`, `working_dir`, `workspace_root`    |
-
-Commands: `moon templates` lists templates, `moon template <id>` shows files and variables, `moon generate <id> --to <dir> --defaults --dry-run -- --var value` renders without writing. Boolean variables accept `--flag` and `--no-flag`. The moon MCP server exposes `get_templates` and `get_template` for agents.
+Tera syntax, moon's case and path filters, frontmatter (`to`, `skip`, `force`), partials, raws and always-available variables: [guides/codegen](https://moonrepo.dev/docs/guides/codegen) and [config/template](https://moonrepo.dev/docs/config/template); Tera itself: https://keats.github.io/tera/docs/. Verified in this skill's example: `pascal_case`/`camel_case` filters, `to:` frontmatter, `[name | pascal_case]` in `destination`, `{{ now() | date(format="%Y-%m-%d") }}`.
 
 ## Alternatives
 

@@ -1,5 +1,7 @@
 # Python
 
+Docs: `moon toolchain info unstable_python` / `unstable_uv` (no Python handbook in the docs; the toolchain is unstable), [config/toolchain#python](https://moonrepo.dev/docs/config/toolchain#python).
+
 The examples use uv. pip and Poetry differ only in the lock and install commands.
 
 ## Two ways to run Python under moon

@@ -1,5 +1,7 @@
 # TypeScript and JavaScript
 
+Docs: [guides/javascript/node-handbook](https://moonrepo.dev/docs/guides/javascript/node-handbook), [guides/javascript/bun-handbook](https://moonrepo.dev/docs/guides/javascript/bun-handbook), [guides/javascript/typescript-project-refs](https://moonrepo.dev/docs/guides/javascript/typescript-project-refs), `moon toolchain info javascript` / `node` / `typescript`.
+
 Node, Bun or Deno; pnpm, npm, yarn or bun as the package manager. The examples use pnpm and Node; swap the executor (`pnpm exec`, `bunx`, `bun --bun`, `deno run`) to match the repository.
 
 ## Toolchains
@@ -189,4 +191,4 @@ tasks:
 
 ## Docker
 
-The JavaScript toolchain implements Docker pruning: `moon docker prune` deletes `node_modules` and installs production dependencies of the focused projects. This is the ecosystem where `moon docker scaffold` pays off most; see [docker.md](docker.md). `pnpm deploy --filter <app> --prod out/` is the pnpm-native alternative when you do not want moon inside the image.
+pnpm workspaces have a canonical, verified recipe in [docker.md](docker.md#canonical-recipe-pnpm-workspace): `moon docker scaffold` for file lists, `pnpm fetch` on the lockfile, an offline filtered install, `moon run <app>:build --no-actions`, `pnpm deploy --prod`. Do not use `moon docker setup` (it runs an unfiltered `pnpm install`) or `moon docker prune` there. npm and yarn workspaces: read [guides/docker](https://moonrepo.dev/docs/guides/docker) and check what `moon docker setup` runs with `--log debug` before relying on it.

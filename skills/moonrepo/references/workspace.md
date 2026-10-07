@@ -1,5 +1,7 @@
 # Workspace setup
 
+Docs: [config/workspace](https://moonrepo.dev/docs/config/workspace), [config/toolchain](https://moonrepo.dev/docs/config/toolchain), [guides/root-project](https://moonrepo.dev/docs/guides/root-project), [guides/sharing-config](https://moonrepo.dev/docs/guides/sharing-config), [guides/codeowners](https://moonrepo.dev/docs/guides/codeowners), [guides/vcs-hooks](https://moonrepo.dev/docs/guides/vcs-hooks), [guides/daemon](https://moonrepo.dev/docs/guides/daemon), [guides/mcp](https://moonrepo.dev/docs/guides/mcp), [guides/offline-mode](https://moonrepo.dev/docs/guides/offline-mode).
+
 Everything that lives in `.moon/` or at the repository root: project discovery, toolchains, version pinning, boundaries, shared config and the optional machinery (daemon, MCP, hooks, Pkl).
 
 ## Minimal layout
@@ -118,24 +120,14 @@ golangci-lint = "2.5.0"
 - Local settings merge over the extended file. Keep the shared file to conventions (task names, shells, options); keep project layout and secrets local.
 - Templates are shared separately through `generator.templates` (`git://`, `npm://`, archives); see [codegen.md](codegen.md).
 
-## Pipeline settings worth knowing
+## Pipeline and hasher settings
 
-```yaml
-pipeline:
-    autoCleanCache: true          # deletes cache older than cacheLifetime after each run
-    cacheLifetime: "7 days"
-    installDependencies: [node]   # or false; limit auto-installs to some toolchains
-    syncProjects: true
-    syncWorkspace: true
-    killProcessThreshold: 2000    # ms before children are killed after Ctrl+C
-    logRunningCommand: false
-hasher:
-    walkStrategy: vcs             # or glob; vcs respects .gitignore
-    warnOnMissingInputs: true
-    ignoreMissingPatterns: ["**/.env", "**/.env.*"]
-```
+All settings: [config/workspace#pipeline](https://moonrepo.dev/docs/config/workspace#pipeline), [#hasher](https://moonrepo.dev/docs/config/workspace#hasher). Decisions worth making explicitly:
 
-Telemetry is on by default (`telemetry: false` or `MOON_TELEMETRY=false` to opt out); some companies require turning it off.
+- `pipeline.installDependencies`: on by default; set `false` (or a toolchain list) when CI installs dependencies itself, so `moon run` never starts an unexpected install.
+- `pipeline.cacheLifetime`/`autoCleanCache` (7 days by default) bound local cache growth; persisted CI caches inherit the same limit.
+- `hasher.ignorePatterns` for large binary files that never change results; `hasher.ignoreMissingPatterns` for optional inputs such as `.env`.
+- `telemetry: false` (or `MOON_TELEMETRY=false`) where company policy requires it.
 
 ## Daemon (v2.2+, unstable)
 
@@ -151,7 +143,7 @@ Telemetry is on by default (`telemetry: false` or `MOON_TELEMETRY=false` to opt 
 
 ## Pkl configs (v2.6 type checking)
 
-`.moon/*.pkl` and `moon.pkl` can `amends ".../.moon/cache/schemas/pkl/ProjectConfig.pkl"` for type checking and editor completion. Pkl pays off when configs are generated or heavily parameterised; for hand-written configs YAML plus the JSON schemas (`$schema: https://moonrepo.dev/schemas/project.json`) is enough.
+Setup: [config/overview](https://moonrepo.dev/docs/config/overview). Pkl pays off when configs are generated or heavily parameterised; for hand-written configs YAML plus the JSON schemas (`$schema: https://moonrepo.dev/schemas/project.json`) is enough.
 
 ## VCS hooks
 

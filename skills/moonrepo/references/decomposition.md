@@ -1,5 +1,7 @@
 # Task decomposition
 
+Docs: [config/project](https://moonrepo.dev/docs/config/project), [config/tasks](https://moonrepo.dev/docs/config/tasks), [concepts/task-inheritance](https://moonrepo.dev/docs/concepts/task-inheritance), [concepts/task](https://moonrepo.dev/docs/concepts/task).
+
 How to split configuration between layers, between tasks, and between projects. Examples were checked on moon 2.5 (`moon task <target> --json`); v2.6 features are marked.
 
 ## 1. One fact, one layer
@@ -203,39 +205,22 @@ workspace:
 
 Excluding is a smell: usually the project has the wrong tag or language. Fix that first.
 
-## 6. Options worth knowing
+## 6. Options: when to reach for which
 
-| Option / field                     | Use it for                                                                 |
-| ---------------------------------- | -------------------------------------------------------------------------- |
-| `preset: server`                   | `dev`, `start`: no cache, streamed output, persistent, not in CI           |
-| `preset: utility`                  | interactive helpers: no cache, interactive, streamed, skipped in CI        |
-| `options.internal: true`           | steps that only exist to be depended on                                    |
-| `options.os: windows` / `linux`    | OS-specific variants of one operation                                      |
-| `options.envFile: .env`            | loading a dotenv file without a wrapper script (`/.env.shared` from the root) |
-| `options.envOverride` (v2.6)       | task `env` wins over the shell/CI env (`true` or a list of names)          |
-| `options.expectFailure` (v2.6)     | a check known to fail during a migration; the pipeline fails once it passes |
-| `options.allowFailure`             | advisory tasks; dependents cannot rely on it                               |
-| `options.runInCI`                  | `true`/`affected`, `always`, `false`, `only`, `skip` (see [ci.md](ci.md))  |
-| `options.cache`                    | `true`, `false`, `local`, `remote`; `cacheKey` to bust, `cacheLifetime` to expire |
-| `options.priority`                 | `critical`/`high` for long tasks on the critical path                     |
-| `options.outputStyle`              | `buffer-only-failure` for chatty transitive deps                          |
-| `options.affectedFiles: args`      | passing only changed files under `--affected`; outside it moon appends `.`, so not for tasks that pass `$projectSource` from the workspace root |
-| `options.timeout`, `retryCount`    | bounding hung or network-bound tasks                                       |
-| `checks` (v2.4)                    | `requirement`: fail fast if a tool or daemon is missing (`docker info`); `condition`: skip when all pass; `fingerprint`: hash a command's output (tool version, platform) |
-| `description`                      | text shown by `moon task` and `moon project`; write it for non-obvious tasks |
-| task `tags`                        | selecting tagged tasks of a project: `moon run 'frontend:#quality'`        |
+Full list and current values: [config/project#options](https://moonrepo.dev/docs/config/project#options) (and `moon task <target> --json` for what a task really has). The ones that carry a decision:
 
-## 7. Tokens you will need
+- `preset: server` for `dev`/`start`, `preset: utility` for interactive helpers, instead of hand-setting `cache`, `persistent`, `runInCI`, `interactive`.
+- `internal: true` for steps that exist only to be depended on.
+- `allowFailure` for advisory tasks (dependents cannot rely on them); `expectFailure` (v2.6) for checks known to fail during a migration, so the pipeline tells you when they start passing.
+- `envOverride` (v2.6) when a task's `env` must beat the shell/CI environment (`NODE_ENV=test` in CI).
+- `cache: local | remote`, `cacheKey`, `cacheLifetime`: see [caching.md](caching.md#3-controls).
+- `affectedFiles: args` only for tools that accept a file list and `.`: outside `--affected` moon passes `.`.
+- `checks` (v2.4): `requirement` to fail fast when a tool or daemon is missing, `condition` to skip already-done work, `fingerprint` to hash external state (tool version, platform).
+- `os` for OS-specific variants of one operation; `mutex` for shared resources; `timeout`/`retryCount` for network-bound tasks.
 
-| Token                                  | Expands to                                              |
-| -------------------------------------- | ------------------------------------------------------- |
-| `$projectSource`                       | project path from the workspace root (`apps/frontend`)  |
-| `$projectRoot`, `$workspaceRoot`       | absolute paths                                          |
-| `$project`, `$task`, `$target`         | ids of the running task                                 |
-| `@files(group)`, `@globs(group)`       | matched files, or the group's glob patterns             |
-| `@dirs(group)`, `@root(group)`         | matched directories, or their lowest common directory   |
-| `@in(0)`, `@out(0)`                    | the task's own input or output by index                 |
-| `@meta(key)`                           | a value from the project's `project:` metadata          |
-| `$MOON_*` env inside the process       | `MOON_PROJECT_ID`, `MOON_TARGET`, `MOON_TASK_HASH`, `MOON_PROJECT_SNAPSHOT`, ... |
+## 7. Tokens
 
-Absolute tokens (`$workspaceRoot`) in `args` become part of the hash, so a machine with a different checkout path gets a different hash. Prefer `$projectSource` and workspace-relative paths when the task runs from the workspace root.
+Full list: [concepts/token](https://moonrepo.dev/docs/concepts/token); env vars moon sets inside tasks: [env-vars](https://moonrepo.dev/docs/env-vars). What matters for decisions:
+
+- `$projectSource` (workspace-relative) is portable; `$projectRoot`/`$workspaceRoot` are absolute and enter the hash (verified), so they break remote-cache hits across machines with different checkout paths.
+- `@files(group)` applies `!` exclusions and passes files; `@globs(group)` passes raw patterns for tools that expand them.

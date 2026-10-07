@@ -1,5 +1,7 @@
 # Debugging tasks
 
+Docs: [guides/debug-task](https://moonrepo.dev/docs/guides/debug-task), [commands/hash](https://moonrepo.dev/docs/commands/hash), [logging and debug env vars](https://moonrepo.dev/docs/commands/overview#debugging), [env-vars](https://moonrepo.dev/docs/env-vars).
+
 Most task problems are one of: the task is not configured the way you think (inheritance), the hash includes too much or too little, or the environment differs between machines. Work through the steps in order; most issues end at step 3.
 
 moon ships an official agent skill with the same workflow: `npx skills add moonrepo/moon --skill debug-task` (v2.2+). Use it alongside this file if it is installed.

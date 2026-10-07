@@ -1,6 +1,8 @@
 # File pattern cookbook
 
-Every pattern below was checked on moon 2.5.6 with a throwaway `echo @files(<group>)` task against a real file tree. Patterns are project-relative unless they start with `/`.
+Docs: [concepts/file-pattern](https://moonrepo.dev/docs/concepts/file-pattern), [concepts/file-group](https://moonrepo.dev/docs/concepts/file-group), [inputs](https://moonrepo.dev/docs/config/project#inputs), [outputs](https://moonrepo.dev/docs/config/project#outputs).
+
+Every pattern below was verified on moon 2.5 with a throwaway `echo @files(<group>)` task against a real file tree. Patterns are project-relative unless they start with `/`.
 
 ## How to think about a group
 

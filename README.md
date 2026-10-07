@@ -38,7 +38,7 @@ The agent reads `SKILL.md` (about 150 lines: the mental model, rules and a table
 | `codegen.md`, `wasm-plugins.md` | `moon generate` templates, when WASM plugins are worth it |
 | `migration.md`, `scale.md` | porting from scripts, Nx and Turborepo; large-monorepo trade-offs |
 
-Many claims in the references are marked "verified": they were checked against a real moon workspace (moon 2.5.5) and the documentation of moon 2.6.0. Features carry the version that introduced them.
+The skill keeps rules, recipes and verified gotchas, and sends the agent to moon's documentation (raw MDX on GitHub, `llms.txt`) and CLI (`--help`, `moon toolchain info`, `moon task --json`) for reference details, so it does not go stale with every moon release. Claims marked "(verified)" were reproduced on a real workspace with the version stated; the pnpm Docker recipe was built and run end to end.
 
 ## Repository layout
 

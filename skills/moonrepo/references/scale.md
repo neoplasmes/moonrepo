@@ -1,5 +1,7 @@
 # moon at scale: scenarios and trade-offs
 
+Docs: the docs pages linked from each referenced file.
+
 Each scenario: the situation, what to do, and what it costs. Links point to the detailed references.
 
 ## 1. Hundreds of projects, dozens of teams
@@ -53,11 +55,11 @@ Each scenario: the situation, what to do, and what it costs. Links point to the 
 ## 5. Many deployable services and container images
 
 **Do.**
-- Per ecosystem: Go/Rust/static frontends build artifacts as cached moon tasks and copy them into minimal images; Node/Python multi-package services use `moon docker scaffold` or the ecosystem's own pruning ([docker.md](docker.md)).
+- Per ecosystem: Go/Rust/static frontends build artifacts as cached moon tasks and copy them into minimal images; pnpm services use the canonical recipe in [docker.md](docker.md#canonical-recipe-pnpm-workspace); Python multi-package services use uv's layering, optionally with `moon docker scaffold` ([docker.md](docker.md)).
 - Image tasks have real inputs (Dockerfile + the groups they ship) so `moon ci` selects them only when affected. Tag images with the commit SHA; deploy affected services only.
 - Pin moon inside images to the version in `.prototools`; add `.prototools` to `docker.scaffold.configsPhaseGlobs`; narrow `sourcesPhaseGlobs`.
 
-**Costs.** `moon docker scaffold` copies every project's manifests into the dependency layer, so in a large workspace the install layer is invalidated by unrelated manifest changes; per-service `pnpm deploy`/uv layering can be more precise for big repositories. Building outside Docker ties the artifact to the CI runner's platform.
+**Costs.** `moon docker scaffold` copies every project's manifests into `configs`, and no setting removes them (verified). In the pnpm recipe a `pnpm fetch` layer keyed on the lockfile absorbs this: an unrelated `package.json` change re-runs only a ~1 s offline install. Without such a layer every unrelated manifest change re-downloads dependencies. Building outside Docker ties the artifact to the CI runner's platform.
 
 ## 6. Merge queues and high commit rates
 
